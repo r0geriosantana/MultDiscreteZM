@@ -2,8 +2,8 @@ Package: MultDiscreteZM
 Type: Package
 Title: Multivariate Zero-Modified Discrete Distributions
 Version: 0.2.4
-Author: Rogerio Santana
-Maintainer: Rogerio Santana <rogerio.santana@ufvjm.edu.br>
+Author: Rogerio A. Santana, Katiane S. Conceicao,Carlos A. R. Diniz, Marinho G. Andrade
+Maintainer: Rogerio A. Santana <rogerio.santana@ufvjm.edu.br>
 Description: Provides functions to fit, simulate, and analyze various 
     zero-modified multivariate discrete distributions, including the 
     COM-Poisson, Poisson, and Negative Binomial models.
