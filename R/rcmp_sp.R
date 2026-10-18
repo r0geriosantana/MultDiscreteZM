@@ -8,7 +8,7 @@
 #' @param nu A numeric vector. The dispersion parameter.
 #'
 #' @return A vector of random integers.
-#' @author Rogerio A. Santana
+#' @author Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 #'
 #' @examples
 #' # 1. Simple Simulation (scalar parameters)

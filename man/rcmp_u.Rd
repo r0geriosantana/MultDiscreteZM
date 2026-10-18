@@ -27,5 +27,5 @@ rcmp_u(n = 10, mu = 3, kappa = -0.37)
 
 }
 \author{
-Rogerio A. Santana
+Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 }

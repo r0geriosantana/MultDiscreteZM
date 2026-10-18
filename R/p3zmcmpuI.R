@@ -11,7 +11,7 @@
 #' @param log.p Logical; if TRUE, probabilities are given as log(p). Defaults to FALSE.
 #'
 #' @return A numeric vector of cumulative probabilities.
-#' @author Rogerio A. Santana
+#' @author Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 #'
 #' @examples
 #' p3zmcmpuI(y1 = 1, y2 = 2, y3 = 1,

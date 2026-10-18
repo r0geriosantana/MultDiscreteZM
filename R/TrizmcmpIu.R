@@ -6,7 +6,7 @@
 #' @param yx,ys,yz Numeric vectors representing the count responses.
 #'
 #' @return A list containing parameter estimates, standard errors, model information, and the Q-Q plot.
-#' @author Rogerio A. Santana
+#' @author Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 #' @export
 TrizmcmpIu <- function(yx, ys, yz) {
 
@@ -20,7 +20,7 @@ TrizmcmpIu <- function(yx, ys, yz) {
   zero2 <- ifelse(pois2$y == 0, 1, 0)
   zero3 <- ifelse(pois3$y == 0, 1, 0)
 
-  y0 <- zero1 * zero2 * zero3
+  y0 <- 1 - zero1 * zero2 * zero3   # indicator I(Y != 0): omega = P(Y != 0)
 
   bin0 <- stats::glm.fit(stats::model.matrix(pois1), y0, family = stats::binomial())
 
@@ -114,7 +114,7 @@ TrizmcmpIu <- function(yx, ys, yz) {
   Parameters <- c('gamma', 'beta1', 'beta2', 'beta3', 'kappa1', 'kappa2', 'kappa3')
   tabela_resumo <- data.frame(
     Parameters = Parameters,
-    MLS = round(parametros, 4),
+    MLE = round(parametros, 4),
     SE = round(erro_pad, 4),
     Z_Value = round(Z, 4),
     P_Value = round(p_valor, 4)
@@ -128,9 +128,9 @@ TrizmcmpIu <- function(yx, ys, yz) {
     N_Obs = length(yx)
   )
 
-  print("--- Estimated Parameters Summary ---")
+  cat("--- Estimated Parameters Summary ---\n")
   print(tabela_resumo, row.names = FALSE)
-  print("\n--- Model Information ---")
+  cat("\n--- Model Information ---\n")
   print(tabela_info, row.names = FALSE)
 
   # --- 5. DELTA METHOD (ORIGINAL SCALE) ---
@@ -169,7 +169,7 @@ TrizmcmpIu <- function(yx, ys, yz) {
     Parameters_orig <- c('p', 'mu1', 'mu2', 'mu3', 'kappa1', 'kappa2', 'kappa3')
     tabela_ic <- data.frame(
       Parameters = Parameters_orig,
-      MLS = round(estimativas_originais, 4),
+      MLE = round(estimativas_originais, 4),
       SE = round(erros_padrao_orig, 4),
       LI_95 = round(ic_inferior, 4),
       LS_95 = round(ic_superior, 4)
@@ -187,9 +187,9 @@ TrizmcmpIu <- function(yx, ys, yz) {
 
   # Translation to original scale for internal helper functions
   nu1 <- exp(kappa1); nu2 <- exp(kappa2); nu3 <- exp(kappa3)
-  lambda1 <- pmax(mu1 + (nu1 - 1) / (2 * nu1), 1e-10)^nu1
-  lambda2 <- pmax(mu2 + (nu2 - 1) / (2 * nu2), 1e-10)^nu2
-  lambda3 <- pmax(mu3 + (nu3 - 1) / (2 * nu3), 1e-10)^nu3
+  lambda1 <- lambda_u(mu1, kappa1)   # exact: E0(Y1) = mu1
+  lambda2 <- lambda_u(mu2, kappa2)
+  lambda3 <- lambda_u(mu3, kappa3)
 
   E1 <- p0 * EXcmp(lambda1, nu1); E2 <- p0 * EXcmp(lambda2, nu2); E3 <- p0 * EXcmp(lambda3, nu3)
 
@@ -226,7 +226,6 @@ TrizmcmpIu <- function(yx, ys, yz) {
   }
 
   plot_residual <- qq_plot_zm(residuos_normais)
-  print(plot_residual)
 
   # --- 8. RETURN STRUCTURED OBJECT ---
   return(invisible(list(

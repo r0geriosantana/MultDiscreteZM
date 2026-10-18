@@ -67,12 +67,12 @@ reg3zmnbI <- function(yx, ys, yz, x) {
 
     vetor_dzeros <- cmpzero[y00]
 
-    parte_naozero <- stats::dnbinom(y1, size = theta1, mu = lambda1) * stats::dnbinom(y2, size = theta2, mu = lambda2) * stats::dnbinom(y3, size = theta3, mu = lambda3)
+    log_parte_naozero <- stats::dnbinom(y1, size = theta1, mu = lambda1, log = TRUE) + stats::dnbinom(y2, size = theta2, mu = lambda2, log = TRUE) + stats::dnbinom(y3, size = theta3, mu = lambda3, log = TRUE)
 
-    cmp_contagem <- parte_naozero[y0c]
+    log_cmp_contagem <- log_parte_naozero[y0c]
 
     logvetor_zeros <- sum(log(vetor_dzeros + 1e-15))
-    logcmp_contagem <- sum(log(cmp_contagem + 1e-15))
+    logcmp_contagem <- sum(log_cmp_contagem)   # log densities: no floor
     logomega_zero <- sum(log(omega0[y0c] + 1e-15))
     logdenom <- sum(log(1 - dzero[y0c] + 1e-15))
 
@@ -128,12 +128,12 @@ reg3zmnbI <- function(yx, ys, yz, x) {
   Z <- parametros / erro_pad
   p_valor <- 2 * stats::pnorm(abs(Z), lower.tail = FALSE)
 
-  tabela_resumo <- data.frame(Parameters = Parameters_names, MLS = round(parametros, 4), SE = round(erro_pad, 4), Z_Value = round(Z, 4), P_Value = round(p_valor, 4))
+  tabela_resumo <- data.frame(Parameters = Parameters_names, MLE = round(parametros, 4), SE = round(erro_pad, 4), Z_Value = round(Z, 4), P_Value = round(p_valor, 4))
 
   posto <- length(parametros)
   tabela_info <- data.frame(AIC = round(2 * (-log_vero) + 2 * posto, 3), BIC = round(2 * (-log_vero) + posto * log(length(y1)), 3), Log_likelihood = round(log_vero, 3), N_Obs = length(y1))
 
-  print("--- Estimated Parameters Summary (Optimization Scale) ---")
+  cat("--- Estimated Parameters Summary (Optimization Scale) ---\n")
   print(tabela_resumo, row.names = FALSE)
 
   # --- 5. DELTA METHOD ---
@@ -153,20 +153,22 @@ reg3zmnbI <- function(yx, ys, yz, x) {
     erros_padrao_orig <- sqrt(diag(V_p_mu))
 
     z_critico <- stats::qnorm(0.975)
-    ic_inferior <- estimativas_originais - z_critico * erros_padrao_orig
-    ic_superior <- estimativas_originais + z_critico * erros_padrao_orig
+    # Wald limits on the optimization scale, mapped by the (componentwise,
+    # increasing) transformation: the interval for w0 stays in (0, 1)
+    ic_inferior <- g_transform(parametros - z_critico * erro_pad)
+    ic_superior <- g_transform(parametros + z_critico * erro_pad)
 
     Parameters_orig <- Parameters_names
     Parameters_orig[1] <- "omega0"
     idx_zetas <- (length(Parameters_orig) - 2):length(Parameters_orig)
     Parameters_orig[idx_zetas] <- c("theta1", "theta2", "theta3")
 
-    tabela_ic <- data.frame(Parameters = Parameters_orig, MLS = round(estimativas_originais, 4), SE = round(erros_padrao_orig, 4), LI_95 = round(ic_inferior, 4), LS_95 = round(ic_superior, 4))
-    cat("\n--- Confidence Intervals (95%) via Delta Method ---\n")
+    tabela_ic <- data.frame(Parameters = Parameters_orig, MLE = round(estimativas_originais, 4), SE = round(erros_padrao_orig, 4), LI_95 = round(ic_inferior, 4), LS_95 = round(ic_superior, 4))
+    cat("\n--- Original Scale (SE: delta method; 95% CI: transformed Wald limits) ---\n")
     print(tabela_ic, row.names = FALSE)
   }
 
-  print("\n--- Model Information ---")
+  cat("\n--- Model Information ---\n")
   print(tabela_info, row.names = FALSE)
 
   # --- 6. RANDOMIZED QUANTILE RESIDUALS ---
@@ -199,7 +201,6 @@ reg3zmnbI <- function(yx, ys, yz, x) {
   residuos_normais <- stats::qnorm(residuo_uniforme)
 
   plot_residual <- qq_plot_zm(residuos_normais)
-  print(plot_residual)
 
 
   return(invisible(list(

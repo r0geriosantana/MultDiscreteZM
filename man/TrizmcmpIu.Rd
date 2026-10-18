@@ -17,5 +17,5 @@ Fits the trivariate Zero-Modified COM-Poisson distribution (mean-parameterized)
 without covariates. Automatically handles optimization fallbacks and diagnostic plots.
 }
 \author{
-Rogerio A. Santana
+Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 }

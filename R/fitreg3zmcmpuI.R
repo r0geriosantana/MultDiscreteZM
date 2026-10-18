@@ -6,12 +6,13 @@
 #'
 #' @param yx,ys,yz Numeric vectors representing the count responses.
 #' @param x Numeric vector or matrix representing the covariates.
-#' @param kappa_init Numeric scalar. The initial value for the dispersion parameters. Default is -0.5.
+#' @param kappa_init Numeric scalar. The initial value for the dispersion parameters. Default is 0 (nu = 1).
 #'
-#' @return A named numeric vector of the Maximum Likelihood Estimates (MLEs) on the original scale.
-#' @author Rogerio A. Santana
+#' @return A named numeric vector of the Maximum Likelihood Estimates (MLEs) on the original scale,
+#' with attributes \code{converged} (logical) and \code{optimizer} ("optim" or "nloptr").
+#' @author Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 #' @export
-fitreg3zmcmpuI <- function(yx, ys, yz, x, kappa_init = -0.5) {
+fitreg3zmcmpuI <- function(yx, ys, yz, x, kappa_init = 0) {
 
   # --- 1. INITIALIZATION (Poisson & Binomial Guesses) ---
   pois1 <- stats::glm(yx ~ x, family = stats::poisson())
@@ -24,7 +25,7 @@ fitreg3zmcmpuI <- function(yx, ys, yz, x, kappa_init = -0.5) {
   zero1 <- ifelse(yx == 0, 1, 0)
   zero2 <- ifelse(ys == 0, 1, 0)
   zero3 <- ifelse(yz == 0, 1, 0)
-  y0 <- zero1 * zero2 * zero3
+  y0 <- 1 - zero1 * zero2 * zero3   # indicator I(Y != 0): omega = P(Y != 0)
 
   bin0 <- stats::glm.fit(xmat[, 1, drop = FALSE], y0, family = stats::binomial())
 
@@ -47,12 +48,14 @@ fitreg3zmcmpuI <- function(yx, ys, yz, x, kappa_init = -0.5) {
       y3 = yz
     )
   }
+  fg <- zmreg_fg(xmat, yx, ys, yz)
 
   # --- 2. OPTIMIZATION WITH FALLBACK ---
   resultado <- try(
     stats::optim(
       par = chute,
-      fn = likHood,
+      fn = fg$fn,
+      gr = fg$gr,                       # analytic gradient
       method = "BFGS",
       control = list(maxit = 5000, reltol = 1e-12),
       hessian = FALSE # Hessian deactivated for simulation speed
@@ -62,6 +65,7 @@ fitreg3zmcmpuI <- function(yx, ys, yz, x, kappa_init = -0.5) {
 
   if (!inherits(resultado, "try-error") && resultado$convergence == 0) {
     param <- resultado$par
+    optimizer <- "optim"; converged <- TRUE
   } else {
     opts <- list("algorithm" = "NLOPT_LN_SBPLX", "xtol_rel" = 1.0e-7, "maxeval" = 5000)
 
@@ -73,6 +77,8 @@ fitreg3zmcmpuI <- function(yx, ys, yz, x, kappa_init = -0.5) {
       opts = opts
     )
     param <- resultado_nlopt$solution
+    optimizer <- "nloptr"
+    converged <- resultado_nlopt$status >= 1 && resultado_nlopt$status <= 4
   }
 
   # --- 3. PARAMETER EXTRACTION & TRANSFORMATION ---
@@ -96,6 +102,8 @@ fitreg3zmcmpuI <- function(yx, ys, yz, x, kappa_init = -0.5) {
                    'kappa1', 'kappa2', 'kappa3')
 
   names(MLEs) <- param_names
+  attr(MLEs, "converged") <- converged   # TRUE if optim (code 0) or nloptr (status 1-4) converged
+  attr(MLEs, "optimizer") <- optimizer
 
   return(MLEs)
 }

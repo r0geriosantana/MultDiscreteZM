@@ -10,7 +10,7 @@
 #' @param yx,ys,yz Numeric vectors representing the count responses.
 #'
 #' @return A list containing parameter estimates, standard errors, model information, and the Q-Q plot.
-#' @author Rogerio A. Santana
+#' @author Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 #' @export
 TrizmcmpI <- function(yx, ys, yz) {
 
@@ -24,7 +24,7 @@ TrizmcmpI <- function(yx, ys, yz) {
   zero2 <- ifelse(pois2$y == 0, 1, 0)
   zero3 <- ifelse(pois3$y == 0, 1, 0)
 
-  y0 <- zero1 * zero2 * zero3
+  y0 <- 1 - zero1 * zero2 * zero3   # indicator I(Y != 0): omega = P(Y != 0)
 
   bin0 <- stats::glm.fit(stats::model.matrix(pois1), y0, family = stats::binomial())
 
@@ -33,7 +33,7 @@ TrizmcmpI <- function(yx, ys, yz) {
   beta2 <- stats::coefficients(pois2)
   beta3 <- stats::coefficients(pois3)
 
-  chute <- c(gama0, beta1, beta2, beta3, nu1 = 1, nu2 = 1, nu3 = 1)
+  chute <- c(gama0, beta1, beta2, beta3, nu1 = 0, nu2 = 0, nu3 = 0)
 
   # Wrapper for the C++ Likelihood
   likHood <- function(par) {
@@ -113,7 +113,7 @@ TrizmcmpI <- function(yx, ys, yz) {
   Parameters <- c('gamma', 'beta1', 'beta2', 'beta3', 'kappa1', 'kappa2', 'kappa3')
   tabela_resumo <- data.frame(
     Parameters = Parameters,
-    MLS = round(parametros, 4),
+    MLE = round(parametros, 4),
     SE = round(erro_pad, 4),
     Z_Value = round(Z, 4),
     P_Value = round(p_valor, 4)
@@ -127,9 +127,9 @@ TrizmcmpI <- function(yx, ys, yz) {
     N_Obs = length(yx)
   )
 
-  print("--- Estimated Parameters Summary ---")
+  cat("--- Estimated Parameters Summary ---\n")
   print(tabela_resumo, row.names = FALSE)
-  print("\n--- Model Information ---")
+  cat("\n--- Model Information ---\n")
   print(tabela_info, row.names = FALSE)
 
   # --- 5. DELTA METHOD (ORIGINAL SCALE) ---
@@ -148,10 +148,11 @@ TrizmcmpI <- function(yx, ys, yz) {
     return(c(p0 = p0, lambda1 = lambda1, lambda2 = lambda2, lambda3 = lambda3, nu1 = nu1, nu2 = nu2, nu3 = nu3))
   }
 
+  # Must be outside the if() so that moments are computed even with a singular Hessian.
+  estimativas_originais <- g_transform(parametros)
   tabela_ic <- NULL
   if (!any(is.na(erro_pad))) {
     V_gamma_beta <- solve(hessiana)
-    estimativas_originais <- g_transform(parametros)
     G_jacobiana <- numDeriv::jacobian(func = g_transform, x = parametros)
     V_p_lambda <- G_jacobiana %*% V_gamma_beta %*% t(G_jacobiana)
     erros_padrao_orig <- sqrt(diag(V_p_lambda))
@@ -163,7 +164,7 @@ TrizmcmpI <- function(yx, ys, yz) {
     Parameters_orig <- c('p', 'lambda1', 'lambda2', 'lambda3', 'nu1', 'nu2', 'nu3')
     tabela_ic <- data.frame(
       Parameters = Parameters_orig,
-      MLS = round(estimativas_originais, 4),
+      MLE = round(estimativas_originais, 4),
       SE = round(erros_padrao_orig, 4),
       LI_95 = round(ic_inferior, 4),
       LS_95 = round(ic_superior, 4)
@@ -211,7 +212,6 @@ TrizmcmpI <- function(yx, ys, yz) {
   }
 
   plot_residual <- qq_plot_zm(residuos_normais)
-  print(plot_residual)
 
   # --- 8. RETURN STRUCTURED OBJECT ---
   return(invisible(list(

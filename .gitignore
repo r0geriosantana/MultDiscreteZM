@@ -2,3 +2,9 @@
 .Rhistory
 .RData
 .Ruserdata
+results/
+inst/paper/results/
+inst/simulation/results/
+*.o
+*.so
+*.dll

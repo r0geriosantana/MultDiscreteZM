@@ -33,5 +33,5 @@ head(sim_reg)
 
 }
 \author{
-Rogerio A. Santana
+Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 }

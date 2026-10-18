@@ -21,5 +21,5 @@ Maximum Likelihood Estimation for the Trivariate MZMCMP (Type I)
 Fits the trivariate Zero-Modified COM-Poisson distribution without covariates.
 }
 \author{
-Rogerio A. Santana
+Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 }

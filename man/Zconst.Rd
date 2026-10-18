@@ -21,5 +21,5 @@ Calculates the normalization constant (Z) of the COM-Poisson distribution
 using the original parameters lambda and nu, implemented in Rcpp for high performance.
 }
 \author{
-Rogerio A. Santana
+Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 }

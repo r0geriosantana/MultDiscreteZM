@@ -7,7 +7,7 @@
 #' @param x Numeric vector or matrix representing the covariates.
 #'
 #' @return A list containing parameter estimates, standard errors, model information, and the Q-Q plot.
-#' @author Rogerio A. Santana
+#' @author Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 #' @export
 reg3zmcmpuI <- function(yx, ys, yz, x) {
 
@@ -25,7 +25,7 @@ reg3zmcmpuI <- function(yx, ys, yz, x) {
   zero1 <- ifelse(y1 == 0, 1, 0)
   zero2 <- ifelse(y2 == 0, 1, 0)
   zero3 <- ifelse(y3 == 0, 1, 0)
-  y0 <- zero1 * zero2 * zero3
+  y0 <- 1 - zero1 * zero2 * zero3   # indicator I(Y != 0): omega = P(Y != 0)
 
   bin0 <- stats::glm.fit(xmat[, 1, drop = FALSE], y0, family = stats::binomial())
 
@@ -35,12 +35,13 @@ reg3zmcmpuI <- function(yx, ys, yz, x) {
   beta3 <- stats::coefficients(pois3)
 
   # Initialize kappas slightly negative to account for common overdispersion
-  chute <- c(gama0, beta1, beta2, beta3, kappa1 = -0.5, kappa2 = -0.5, kappa3 = -0.5)
+  chute <- c(gama0, beta1, beta2, beta3, kappa1 = 0, kappa2 = 0, kappa3 = 0)
 
   # Wrapper for the C++ Likelihood
   likHood <- function(par) {
     logzmRegIu(par = par, xmat = xmat, y1 = y1, y2 = y2, y3 = y3)
   }
+  fg <- zmreg_fg(xmat, y1, y2, y3)
 
   opt_method <- "optim"
 
@@ -48,7 +49,8 @@ reg3zmcmpuI <- function(yx, ys, yz, x) {
   resultado <- try(
     stats::optim(
       par = chute,
-      fn = likHood,
+      fn = fg$fn,
+      gr = fg$gr,                       # analytic gradient
       method = "BFGS",
       control = list(maxit = 5000, reltol = 1e-12),
       hessian = TRUE
@@ -138,9 +140,9 @@ reg3zmcmpuI <- function(yx, ys, yz, x) {
     N_Obs = length(y1)
   )
 
-  print("--- Estimated Parameters Summary ---")
+  cat("--- Estimated Parameters Summary ---\n")
   print(tabela_resumo, row.names = FALSE)
-  print("\n--- Model Information ---")
+  cat("\n--- Model Information ---\n")
   print(tabela_info, row.names = FALSE)
 
   # --- 5. DELTA METHOD (ORIGINAL SCALE) ---
@@ -161,8 +163,10 @@ reg3zmcmpuI <- function(yx, ys, yz, x) {
     erros_padrao_orig <- sqrt(diag(V_p_mu))
 
     z_critico <- stats::qnorm(0.975)
-    ic_inferior <- estimativas_originais - z_critico * erros_padrao_orig
-    ic_superior <- estimativas_originais + z_critico * erros_padrao_orig
+    # Wald limits on the optimization scale, mapped by the (componentwise,
+    # increasing) transformation: the interval for w0 stays in (0, 1)
+    ic_inferior <- g_transform(param - z_critico * erro_pad)
+    ic_superior <- g_transform(param + z_critico * erro_pad)
 
     Parameters_orig <- Parameters
     Parameters_orig[1] <- "w0" # Rename gamma0 to w0
@@ -174,7 +178,7 @@ reg3zmcmpuI <- function(yx, ys, yz, x) {
       LI_95 = round(ic_inferior, 4),
       LS_95 = round(ic_superior, 4)
     )
-    cat("\n--- Confidence Intervals (95%) via Delta Method ---\n")
+    cat("\n--- Original Scale (SE: delta method; 95% CI: transformed Wald limits) ---\n")
     print(tabela_ic, row.names = FALSE)
   }
 
@@ -214,7 +218,6 @@ reg3zmcmpuI <- function(yx, ys, yz, x) {
   }
 
   plot_residual <- qq_plot_zm(residuos_normais)
-  print(plot_residual)
 
   # --- 7. RETURN STRUCTURED OBJECT ---
   return(invisible(list(

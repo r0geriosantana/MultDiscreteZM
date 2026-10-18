@@ -19,5 +19,5 @@ Fits the trivariate Zero-Modified COM-Poisson regression model
 (mean-parameterized) incorporating covariates for the mean components.
 }
 \author{
-Rogerio A. Santana
+Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 }

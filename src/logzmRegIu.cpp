@@ -3,6 +3,7 @@
 #include <RcppArmadillo.h>
 
 #include "utils_cmp.h" // Puxa as funcoes do arquivo mestre
+#include "cmp_grad.h"  // verossimilhanca + gradiente analitico
 
 // [[Rcpp::depends(RcppArmadillo)]]
 
@@ -39,24 +40,53 @@ double logzmRegIu(NumericVector par,
   vec mu3 = arma::exp(X * beta3);
 
   double omega = 1.0 / (1.0 + std::exp(-gama));
+  double nu1 = std::exp(kappa1), nu2 = std::exp(kappa2), nu3 = std::exp(kappa3);
   double loglik = 0.0;
 
   for (int i = 0; i < n; i++) {
     int yy1 = y1[i]; int yy2 = y2[i]; int yy3 = y3[i];
 
     if (yy1 == 0 && yy2 == 0 && yy3 == 0) {
-      double p_joint_zeros = (1.0 - omega);
-      loglik += std::log(p_joint_zeros + 1e-15);
+      loglik += std::log1p(-omega);
     } else {
-      loglik += std::log(omega + 1e-15);
+      loglik += std::log(omega);
 
-      double contagem = dcmpu(yy1, mu1[i], kappa1) * dcmpu(yy2, mu2[i], kappa2) * dcmpu(yy3, mu3[i], kappa3);
-      double den0 = dcmpu(0, mu1[i], kappa1) * dcmpu(0, mu2[i], kappa2) * dcmpu(0, mu3[i], kappa3);
+      // lambda = g^{-1}(mu; nu) e log S calculados uma unica vez por componente
+      double l1 = cmp_lambda_from_mu(mu1[i], nu1);
+      double l2 = cmp_lambda_from_mu(mu2[i], nu2);
+      double l3 = cmp_lambda_from_mu(mu3[i], nu3);
+      double lS1 = cmp_series(l1, nu1).logS;
+      double lS2 = cmp_series(l2, nu2).logS;
+      double lS3 = cmp_series(l3, nu3).logS;
 
-      loglik += std::log(contagem + 1e-15) - std::log((1.0 - den0) + 1e-15);
+      double logcont = yy1 * std::log(l1) - nu1 * std::lgamma(yy1 + 1.0)
+                     + yy2 * std::log(l2) - nu2 * std::lgamma(yy2 + 1.0)
+                     + yy3 * std::log(l3) - nu3 * std::lgamma(yy3 + 1.0);
+      double logS_tot = lS1 + lS2 + lS3;          // log prod S
+      // log f+ = logcont - log(prod S - 1)
+      loglik += logcont - (logS_tot + std::log1p(-std::exp(-logS_tot)));
     }
   }
 
   if (!std::isfinite(loglik)) return R_PosInf;
   return -loglik;
+}
+
+// Negative log-likelihood and its analytic gradient in one pass.
+// Returns c(value, gradient). Used by optim(fn, gr) in the fitting functions.
+// [[Rcpp::export]]
+NumericVector logzmRegIu_vg(NumericVector par,
+                            NumericMatrix xmat,
+                            NumericVector y1,
+                            NumericVector y2,
+                            NumericVector y3) {
+  int n = y1.size();
+  int ka = xmat.ncol();
+  int p = par.size();
+  NumericVector out(p + 1);
+  std::vector<double> g(p);
+  out[0] = zmreg_negloglik_grad(par.begin(), xmat.begin(), n, ka,
+                                y1.begin(), y2.begin(), y3.begin(), g.data());
+  for (int k = 0; k < p; ++k) out[k + 1] = g[k];
+  return out;
 }

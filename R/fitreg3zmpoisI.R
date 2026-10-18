@@ -53,10 +53,10 @@ fitreg3zmpoisI <- function(yx, ys, yz, x) {
 
     vetor_dzeros <- (1 - omega0)[y00]
 
-    cmp_contagem <- (stats::dpois(y1, lambda = lambda1) * stats::dpois(y2, lambda = lambda2) * stats::dpois(y3, lambda = lambda3))[y0c]
+    log_cmp_contagem <- (stats::dpois(y1, lambda = lambda1, log = TRUE) + stats::dpois(y2, lambda = lambda2, log = TRUE) + stats::dpois(y3, lambda = lambda3, log = TRUE))[y0c]
 
     logvetor_zeros <- sum(log(vetor_dzeros + 1e-15))
-    logcmp_contagem <- sum(log(cmp_contagem + 1e-15))
+    logcmp_contagem <- sum(log_cmp_contagem)   # log densities: no floor
     logomega_zero <- sum(log(omega0[y0c] + 1e-15))
     logdenom <- sum(log(1 - dzero[y0c] + 1e-15))
 

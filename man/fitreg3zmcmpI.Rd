@@ -4,14 +4,14 @@
 \alias{fitreg3zmcmpI}
 \title{Rapid MLE Fitting for Trivariate MZMCMP Regression (Lambda Parameterization - Simulation)}
 \usage{
-fitreg3zmcmpI(yx, ys, yz, x, kappa_init = -0.5)
+fitreg3zmcmpI(yx, ys, yz, x, kappa_init = 0)
 }
 \arguments{
 \item{yx, ys, yz}{Numeric vectors representing the count responses.}
 
 \item{x}{Numeric vector or matrix representing the covariates.}
 
-\item{kappa_init}{Numeric scalar. The initial value for the dispersion parameters (log scale). Default is -0.5.}
+\item{kappa_init}{Numeric scalar. The initial value for the dispersion parameters (log scale). Default is 0 (nu = 1).}
 }
 \value{
 A named numeric vector of the Maximum Likelihood Estimates (MLEs) on the original scale.
@@ -22,5 +22,5 @@ for Monte Carlo and Bootstrap simulation studies. Bypasses Hessian calculation
 and console outputs to maximize computational speed.
 }
 \author{
-Rogerio A. Santana
+Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 }

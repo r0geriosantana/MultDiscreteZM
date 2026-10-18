@@ -8,7 +8,7 @@
 #' @param kappa A numeric vector. The dispersion parameter on the log scale.
 #'
 #' @return A vector of random integers.
-#' @author Rogerio A. Santana
+#' @author Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 #'
 #' @examples
 #' # 1. Simple Simulation (scalar parameters)
@@ -28,6 +28,7 @@ rcmp_u <- function(n, mu, kappa) {
   # Pre-calculate Z (using the new Rcpp function Zuconst)
   Z_vec <- Zuconst(mu, kappa)
   nu_vec <- exp(kappa)
+  lambda_vec <- lambda_u(mu, kappa)   # exact-mean rate parameters
 
   rands <- numeric(n)
 
@@ -42,8 +43,7 @@ rcmp_u <- function(n, mu, kappa) {
 
     # Calculate base lambda dynamically for recurrence
     nu_i <- nu_vec[i]
-    base_term <- mu[i] + (nu_i - 1) / (2 * nu_i)
-    lambda_i <- (max(base_term, 1e-10))^nu_i
+    lambda_i <- lambda_vec[i]
 
     U <- stats::runif(1)
     y <- 0

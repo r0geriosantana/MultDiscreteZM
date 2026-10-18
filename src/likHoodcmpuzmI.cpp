@@ -22,25 +22,25 @@ double likHoodcmpuzmI(NumericVector par, NumericVector y1,
   double kappa2 = par[5];
   double kappa3 = par[6];
 
+  double nu1 = exp(kappa1), nu2 = exp(kappa2), nu3 = exp(kappa3);
+  // sem covariaveis: lambda e log S calculados uma unica vez
+  double l1 = cmp_lambda_from_mu(mu1, nu1);
+  double l2 = cmp_lambda_from_mu(mu2, nu2);
+  double l3 = cmp_lambda_from_mu(mu3, nu3);
+  double logS_tot = cmp_series(l1, nu1).logS + cmp_series(l2, nu2).logS + cmp_series(l3, nu3).logS;
+  double logdenom = logS_tot + std::log1p(-std::exp(-logS_tot)); // log(prod S - 1)
+
   double loglik = 0.0;
 
   for (int i = 0; i < n; i++) {
-
     if (y1[i] == 0 && y2[i] == 0 && y3[i] == 0) {
-
-      double p_joint_zeros = (1.0 - omega);
-
-      loglik += log(p_joint_zeros + 1e-15);
+      loglik += std::log1p(-omega);
     } else {
-      loglik += log(omega + 1e-15);
-
-      double logcontagem = log(dcmpu(y1[i], mu1, kappa1)) + log(dcmpu(y2[i], mu2, kappa2)) + log(dcmpu(y3[i], mu3, kappa3)) + 1e-15;
-
-      double den0 = dcmpu(0, mu1, kappa1) * dcmpu(0, mu2, kappa2) * dcmpu(0, mu3, kappa3);
-
-      double logdenom = log((1.0 - den0) + 1e-15);
-
-      loglik += logcontagem - logdenom;
+      loglik += std::log(omega);
+      loglik += y1[i] * std::log(l1) - nu1 * std::lgamma(y1[i] + 1.0)
+              + y2[i] * std::log(l2) - nu2 * std::lgamma(y2[i] + 1.0)
+              + y3[i] * std::log(l3) - nu3 * std::lgamma(y3[i] + 1.0)
+              - logdenom;
     }
   }
 

@@ -9,7 +9,7 @@
 #' @param p Numeric vector. The zero-modification parameter.
 #'
 #' @return A data frame with \code{n} rows and 3 columns (\code{Y1}, \code{Y2}, \code{Y3}) containing the simulated values.
-#' @author Rogerio A. Santana
+#' @author Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 #'
 #' @examples
 #' set.seed(123)

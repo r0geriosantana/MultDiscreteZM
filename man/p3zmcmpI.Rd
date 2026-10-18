@@ -46,5 +46,5 @@ p3zmcmpI(y1 = 1, y2 = 2, y3 = 1,
 
 }
 \author{
-Rogerio A. Santana
+Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 }

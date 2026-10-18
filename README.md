@@ -47,3 +47,15 @@ Y <- r3zmcmpuI_reg0(x, beta1, beta2, beta3, kappa1, kappa2, kappa3, w0)
 
 # 4. Fit the Trivariate ZMCMP Regression Model
 fit_reg <- reg3zmcmpuI(Y1 = Y[,1,], Y2 = Y[,2,], Y3 = Y[,3,], x = x)
+
+## Reproducing the paper
+
+The scripts that reproduce *Zero-Modified Multivariate Conway-Maxwell-Poisson
+Regression with Baseline-Mean Parameterization* are installed with the package:
+
+* `inst/simulation`: simulation study (Section 4); see `inst/simulation/README.md`;
+* `inst/paper`: applications to Alagoas and Minas Gerais (Section 5); see
+  `inst/paper/README.md`;
+* `inst/extdata`: data files; see `inst/extdata/README.md`.
+
+Changes are listed in `NEWS.md`.

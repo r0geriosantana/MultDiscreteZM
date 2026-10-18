@@ -7,7 +7,7 @@
 #' @param y1,y2,y3 Numeric vectors representing the count responses.
 #'
 #' @return A named numeric vector of the Maximum Likelihood Estimates (MLEs) on the original scale.
-#' @author Rogerio A. Santana
+#' @author Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 #' @export
 fit3zmnbI <- function(y1, y2, y3) {
 

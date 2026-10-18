@@ -60,12 +60,12 @@ TrizmpoisI <- function(yx, ys, yz) {
 
     vetor_dzeros <- cmpzero[y00]
 
-    parte_naozero <- stats::dpois(y1, lambda = lambda1) * stats::dpois(y2, lambda = lambda2) * stats::dpois(y3, lambda = lambda3)
+    log_parte_naozero <- stats::dpois(y1, lambda = lambda1, log = TRUE) + stats::dpois(y2, lambda = lambda2, log = TRUE) + stats::dpois(y3, lambda = lambda3, log = TRUE)
 
-    cmp_contagem <- parte_naozero[y0c]
+    log_cmp_contagem <- log_parte_naozero[y0c]
 
     logvetor_zeros <- sum(log(vetor_dzeros + 1e-15))
-    logcmp_contagem <- sum(log(cmp_contagem + 1e-15))
+    logcmp_contagem <- sum(log_cmp_contagem)   # log densities: no floor
     logomega_zero <- sum(log(omega0[y0c] + 1e-15))
     logdenom <- sum(log(1 - dzero[y0c] + 1e-15))
 
@@ -122,7 +122,7 @@ TrizmpoisI <- function(yx, ys, yz) {
 
   tabela_resumo <- data.frame(
     Parameters = parameters_names,
-    MLS = round(parametros, 4),
+    MLE = round(parametros, 4),
     SE = round(erro_pad, 4),
     Z_Value = round(Z, 4),
     P_Value = round(p_valor, 4)
@@ -136,9 +136,9 @@ TrizmpoisI <- function(yx, ys, yz) {
     N_Obs = length(ys)
   )
 
-  print("--- Estimated Parameters Summary ---")
+  cat("--- Estimated Parameters Summary ---\n")
   print(tabela_resumo, row.names = FALSE)
-  print("\n--- Model Information ---")
+  cat("\n--- Model Information ---\n")
   print(tabela_info, row.names = FALSE)
 
   # --- 5. DELTA METHOD (Original Scale) ---
@@ -173,7 +173,7 @@ TrizmpoisI <- function(yx, ys, yz) {
 
     tabela_ic <- data.frame(
       Parameters = c('p', 'mu1', 'mu2', 'mu3'),
-      MLS = round(estimativas_originais, 4),
+      MLE = round(estimativas_originais, 4),
       SE = round(erros_padrao_orig, 4),
       LI_95 = round(ic_inferior, 4),
       LS_95 = round(ic_superior, 4)
@@ -229,7 +229,6 @@ TrizmpoisI <- function(yx, ys, yz) {
   residuos_normais <- stats::qnorm(residuo_uniforme)
 
   plot_residual <- qq_plot_zm(residuos_normais)
-  print(plot_residual)
 
   return(invisible(list(
     estimates_optim = tabela_resumo,

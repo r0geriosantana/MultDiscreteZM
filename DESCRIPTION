@@ -1,7 +1,7 @@
 Package: MultDiscreteZM
 Type: Package
 Title: Multivariate Zero-Modified Discrete Distributions
-Version: 0.1.0
+Version: 0.2.4
 Author: Rogerio Santana
 Maintainer: Rogerio Santana <rogerio.santana@ufvjm.edu.br>
 Description: Provides functions to fit, simulate, and analyze various 
@@ -11,7 +11,7 @@ License: GPL-2
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
-Suggests: rmarkdown, knitr
+Suggests: rmarkdown, knitr, readxl, parallel
 Imports:Rcpp (>= 1.0.0), stats, nloptr, numDeriv, MASS,ggplot2
 LinkingTo: Rcpp, RcppArmadillo
 VignetteBuilder: knitr

@@ -12,7 +12,7 @@ using namespace Rcpp;
 //' @param sum_limit Integer. A safety buffer to ensure the summation series covers the distribution mass. Default is -1 (dynamic calculation).
 //'
 //' @return A numeric vector containing the normalization constants.
-//' @author Rogerio A. Santana
+//' @author Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 //' @export
 // [[Rcpp::export]]
 NumericVector Zconst(NumericVector lambda, NumericVector nu, int sum_limit = -1) {

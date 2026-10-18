@@ -6,12 +6,12 @@
 #'
 #' @param yx,ys,yz Numeric vectors representing the count responses.
 #' @param x Numeric vector or matrix representing the covariates.
-#' @param kappa_init Numeric scalar. The initial value for the dispersion parameters (log scale). Default is -0.5.
+#' @param kappa_init Numeric scalar. The initial value for the dispersion parameters (log scale). Default is 0 (nu = 1).
 #'
 #' @return A named numeric vector of the Maximum Likelihood Estimates (MLEs) on the original scale.
-#' @author Rogerio A. Santana
+#' @author Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 #' @export
-fitreg3zmcmpI <- function(yx, ys, yz, x, kappa_init = -0.5) {
+fitreg3zmcmpI <- function(yx, ys, yz, x, kappa_init = 0) {
 
   # --- 1. INITIALIZATION ---
   pois1 <- stats::glm(yx ~ x, family = stats::poisson())
@@ -24,7 +24,7 @@ fitreg3zmcmpI <- function(yx, ys, yz, x, kappa_init = -0.5) {
   zero1 <- ifelse(yx == 0, 1, 0)
   zero2 <- ifelse(ys == 0, 1, 0)
   zero3 <- ifelse(yz == 0, 1, 0)
-  y0 <- zero1 * zero2 * zero3
+  y0 <- 1 - zero1 * zero2 * zero3   # indicator I(Y != 0): omega = P(Y != 0)
 
   bin0 <- stats::glm.fit(xmat[, 1, drop = FALSE], y0, family = stats::binomial())
 

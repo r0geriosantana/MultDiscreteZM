@@ -35,5 +35,5 @@ dcmp_sp(y = 2, lambda = 3, nu = 0.76, log = TRUE)
 
 }
 \author{
-Rogerio A. Santana
+Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 }

@@ -4,12 +4,12 @@
 \alias{fit3zmcmpIu}
 \title{Rapid MLE Fitting for Trivariate MZMCMPu without covariates (Simulation Wrapper)}
 \usage{
-fit3zmcmpIu(y1, y2, y3, kappa_init = -0.5)
+fit3zmcmpIu(y1, y2, y3, kappa_init = 0)
 }
 \arguments{
 \item{y1, y2, y3}{Numeric vectors representing the count responses.}
 
-\item{kappa_init}{Numeric scalar. The initial value for the dispersion parameters. Default is -0.5.}
+\item{kappa_init}{Numeric scalar. The initial value for the dispersion parameters. Default is 0 (nu = 1).}
 }
 \value{
 A named numeric vector of the Maximum Likelihood Estimates (MLEs) on the original scale.
@@ -20,5 +20,5 @@ for Monte Carlo and Bootstrap simulation studies. It bypasses Hessian calculatio
 and console outputs to maximize computational speed, returning only the point estimates.
 }
 \author{
-Rogerio A. Santana
+Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 }

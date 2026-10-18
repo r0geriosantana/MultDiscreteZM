@@ -10,7 +10,7 @@
 #' @param log Logical; if TRUE, probabilities are returned as log-probabilities. Defaults to FALSE.
 #'
 #' @return A numeric vector of probabilities or log-probabilities.
-#' @author Rogerio A. Santana
+#' @author Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 #'
 #' @examples
 #' d3zmcmpI(y1 = c(0, 1), y2 = c(0, 2), y3 = c(0, 1),

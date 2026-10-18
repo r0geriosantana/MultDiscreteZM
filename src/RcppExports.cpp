@@ -37,6 +37,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// lambda_u
+NumericVector lambda_u(NumericVector mu, NumericVector kappa);
+RcppExport SEXP _MultDiscreteZM_lambda_u(SEXP muSEXP, SEXP kappaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type mu(muSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type kappa(kappaSEXP);
+    rcpp_result_gen = Rcpp::wrap(lambda_u(mu, kappa));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cmp_moments
+NumericMatrix cmp_moments(NumericVector lambda, NumericVector nu);
+RcppExport SEXP _MultDiscreteZM_cmp_moments(SEXP lambdaSEXP, SEXP nuSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type nu(nuSEXP);
+    rcpp_result_gen = Rcpp::wrap(cmp_moments(lambda, nu));
+    return rcpp_result_gen;
+END_RCPP
+}
 // likHoodcmpuzmI
 double likHoodcmpuzmI(NumericVector par, NumericVector y1, NumericVector y2, NumericVector y3);
 RcppExport SEXP _MultDiscreteZM_likHoodcmpuzmI(SEXP parSEXP, SEXP y1SEXP, SEXP y2SEXP, SEXP y3SEXP) {
@@ -80,6 +104,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// logzmRegIu_vg
+NumericVector logzmRegIu_vg(NumericVector par, NumericMatrix xmat, NumericVector y1, NumericVector y2, NumericVector y3);
+RcppExport SEXP _MultDiscreteZM_logzmRegIu_vg(SEXP parSEXP, SEXP xmatSEXP, SEXP y1SEXP, SEXP y2SEXP, SEXP y3SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type par(parSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type xmat(xmatSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y1(y1SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y2(y2SEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y3(y3SEXP);
+    rcpp_result_gen = Rcpp::wrap(logzmRegIu_vg(par, xmat, y1, y2, y3));
+    return rcpp_result_gen;
+END_RCPP
+}
 // logzmRegTriIcmp
 double logzmRegTriIcmp(NumericVector par, NumericMatrix xmat, NumericVector y1, NumericVector y2, NumericVector y3);
 RcppExport SEXP _MultDiscreteZM_logzmRegTriIcmp(SEXP parSEXP, SEXP xmatSEXP, SEXP y1SEXP, SEXP y2SEXP, SEXP y3SEXP) {
@@ -99,9 +138,12 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_MultDiscreteZM_Zconst", (DL_FUNC) &_MultDiscreteZM_Zconst, 3},
     {"_MultDiscreteZM_Zuconst", (DL_FUNC) &_MultDiscreteZM_Zuconst, 3},
+    {"_MultDiscreteZM_lambda_u", (DL_FUNC) &_MultDiscreteZM_lambda_u, 2},
+    {"_MultDiscreteZM_cmp_moments", (DL_FUNC) &_MultDiscreteZM_cmp_moments, 2},
     {"_MultDiscreteZM_likHoodcmpuzmI", (DL_FUNC) &_MultDiscreteZM_likHoodcmpuzmI, 4},
     {"_MultDiscreteZM_likHoodcmpzmI", (DL_FUNC) &_MultDiscreteZM_likHoodcmpzmI, 4},
     {"_MultDiscreteZM_logzmRegIu", (DL_FUNC) &_MultDiscreteZM_logzmRegIu, 5},
+    {"_MultDiscreteZM_logzmRegIu_vg", (DL_FUNC) &_MultDiscreteZM_logzmRegIu_vg, 5},
     {"_MultDiscreteZM_logzmRegTriIcmp", (DL_FUNC) &_MultDiscreteZM_logzmRegTriIcmp, 5},
     {NULL, NULL, 0}
 };

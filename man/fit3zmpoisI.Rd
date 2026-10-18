@@ -18,5 +18,5 @@ for Monte Carlo and Bootstrap simulation studies. It bypasses Hessian calculatio
 and console outputs to maximize computational speed, returning only the point estimates.
 }
 \author{
-Rogerio A. Santana
+Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 }

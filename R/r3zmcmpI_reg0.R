@@ -10,7 +10,7 @@
 #' @param w0 Numeric scalar or vector. The hurdle probability (omega), representing P(Y > 0).
 #'
 #' @return A data frame with \code{n} rows and 3 columns (\code{Y1}, \code{Y2}, \code{Y3}).
-#' @author Rogerio A. Santana
+#' @author Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 #'
 #' @examples
 #' set.seed(123)

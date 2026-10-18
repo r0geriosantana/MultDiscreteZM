@@ -62,10 +62,10 @@ fitreg3zmnbI <- function(yx, ys, yz, x) {
 
     vetor_dzeros <- (1 - omega0)[y00]
 
-    cmp_contagem <- (stats::dnbinom(y1, size = theta1, mu = lambda1) * stats::dnbinom(y2, size = theta2, mu = lambda2) * stats::dnbinom(y3, size = theta3, mu = lambda3))[y0c]
+    log_cmp_contagem <- (stats::dnbinom(y1, size = theta1, mu = lambda1, log = TRUE) + stats::dnbinom(y2, size = theta2, mu = lambda2, log = TRUE) + stats::dnbinom(y3, size = theta3, mu = lambda3, log = TRUE))[y0c]
 
     logvetor_zeros <- sum(log(vetor_dzeros + 1e-15))
-    logcmp_contagem <- sum(log(cmp_contagem + 1e-15))
+    logcmp_contagem <- sum(log_cmp_contagem)   # log densities: no floor
     logomega_zero <- sum(log(omega0[y0c] + 1e-15))
     logdenom <- sum(log(1 - dzero[y0c] + 1e-15))
 

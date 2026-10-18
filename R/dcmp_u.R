@@ -1,7 +1,7 @@
 #' Probability mass function of the univariate COM-Poisson distribution parameterized by the mean.
 #'
 #' @description Calculate the probability mass function (PMF) of the univariate COM-Poisson distribution
-#' parameterized by the mean, as proposed by Ribeiro Jr et al. (2020).
+#' parameterized by its exact mean (Huang, 2017).
 #'
 #' @param y A numeric vector of non-negative integers (quantiles).
 #' @param mu A numeric vector. The mean parameter of the distribution (mu > 0).
@@ -10,10 +10,10 @@
 #'
 #' @details
 #' The function computes the density using the normalization constant \code{\link{Zconst}}.
-#' It includes safeguards against numerical instability in the lambda approximation.
+#' The rate parameter is obtained numerically as lambda = g^{-1}(mu; nu) (see \code{\link{lambda_u}}).
 #'
 #' @return A numeric vector of probabilities or log-probabilities.
-#' @author Rogerio A. Santana
+#' @author Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 #'
 #' @examples
 #' # Probabilidade pontual
@@ -28,15 +28,8 @@ dcmp_u <- function(y, mu, kappa, log = FALSE) {
   # 1. Basic definitions
   nu <- exp(kappa)
 
-  # 2. Calculation of Lambda (with the same protection against NaN used in Zconst)
-  base_term <- mu + (nu - 1) / (2 * nu)
-
-  # Protection: If the base is <= 0, we use an infinitesimal value to allow for logging.
-  lambda_base <- pmax(base_term, 1e-10)
-
-  # Note: log(lambda^y) = y * log(lambda) = y * log(base^nu) = y * nu * log(base)
-  #We calculate log(lambda) directly for stability.
-  log_lambda <- nu * log(lambda_base)
+  # 2. Rate parameter whose EXACT mean equals mu: lambda = g^{-1}(mu; nu)
+  log_lambda <- log(lambda_u(mu, kappa))
 
   # 3. Calculation of the components of the Log-Likelihood
   # Log(P) = y*log(lambda) - nu*log(y!) - log(Z)

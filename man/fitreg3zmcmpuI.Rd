@@ -4,17 +4,18 @@
 \alias{fitreg3zmcmpuI}
 \title{Rapid MLE Fitting for Trivariate MZMCMPu Regression (Simulation Wrapper)}
 \usage{
-fitreg3zmcmpuI(yx, ys, yz, x, kappa_init = -0.5)
+fitreg3zmcmpuI(yx, ys, yz, x, kappa_init = 0)
 }
 \arguments{
 \item{yx, ys, yz}{Numeric vectors representing the count responses.}
 
 \item{x}{Numeric vector or matrix representing the covariates.}
 
-\item{kappa_init}{Numeric scalar. The initial value for the dispersion parameters. Default is -0.5.}
+\item{kappa_init}{Numeric scalar. The initial value for the dispersion parameters. Default is 0 (nu = 1).}
 }
 \value{
-A named numeric vector of the Maximum Likelihood Estimates (MLEs) on the original scale.
+A named numeric vector of the Maximum Likelihood Estimates (MLEs) on the original scale,
+with attributes \code{converged} (logical) and \code{optimizer} ("optim" or "nloptr").
 }
 \description{
 A streamlined version of the fitting function designed specifically
@@ -22,5 +23,5 @@ for Monte Carlo and Bootstrap simulation studies. It bypasses Hessian calculatio
 and console outputs to maximize computational speed, returning only the point estimates.
 }
 \author{
-Rogerio A. Santana
+Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 }

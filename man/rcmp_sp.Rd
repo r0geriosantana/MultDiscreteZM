@@ -27,5 +27,5 @@ rcmp_sp(n = 10, lambda = 3, nu = 0.76)
 
 }
 \author{
-Rogerio A. Santana
+Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 }

@@ -3,7 +3,23 @@
 \name{Zuconst}
 \alias{Zuconst}
 \title{Normalization constant for Mean-Parameterized COM-Poisson (Rcpp)}
+\usage{
+Zuconst(mu, kappa, sum_limit = -1L)
+}
+\arguments{
+\item{mu}{A numeric vector. The exact baseline mean (mu > 0).}
+
+\item{kappa}{A numeric vector. The dispersion parameter on the log scale (nu = exp(kappa)).}
+
+\item{sum_limit}{Ignored; kept for backward compatibility.}
+}
+\value{
+A numeric vector containing the normalization constants.
+}
 \description{
-Calculates the normalization constant (Z) of the COM-Poisson distribution
-using Rcpp for high performance.
+Normalization constant S(lambda, nu) with lambda = g^{-1}(mu; nu),
+i.e. the rate whose exact mean equals mu. Adaptive truncation.
+}
+\author{
+Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 }

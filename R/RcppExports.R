@@ -12,21 +12,50 @@
 #' @param sum_limit Integer. A safety buffer to ensure the summation series covers the distribution mass. Default is -1 (dynamic calculation).
 #'
 #' @return A numeric vector containing the normalization constants.
-#' @author Rogerio A. Santana
+#' @author Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 #' @export
 Zconst <- function(lambda, nu, sum_limit = -1L) {
     .Call(`_MultDiscreteZM_Zconst`, lambda, nu, sum_limit)
 }
 
 #' Normalization constant for Mean-Parameterized COM-Poisson (Rcpp)
-#' 
+#'
 #' @name Zuconst
-#' @description Calculates the normalization constant (Z) of the COM-Poisson distribution
-#' using Rcpp for high performance.
-NULL
-
+#' @description Normalization constant S(lambda, nu) with lambda = g^{-1}(mu; nu),
+#' i.e. the rate whose exact mean equals mu. Adaptive truncation.
+#'
+#' @param mu A numeric vector. The exact baseline mean (mu > 0).
+#' @param kappa A numeric vector. The dispersion parameter on the log scale (nu = exp(kappa)).
+#' @param sum_limit Ignored; kept for backward compatibility.
+#' @return A numeric vector containing the normalization constants.
+#' @author Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
+#' @export
 Zuconst <- function(mu, kappa, sum_limit = -1L) {
     .Call(`_MultDiscreteZM_Zuconst`, mu, kappa, sum_limit)
+}
+
+#' Rate parameter from the exact baseline mean
+#'
+#' @description Computes lambda = g^{-1}(mu; nu), the COM-Poisson rate whose
+#' exact mean equals \code{mu}, with \code{nu = exp(kappa)}. Uses Newton's method
+#' on log(lambda) with adaptive series truncation.
+#'
+#' @param mu Numeric vector of baseline means (mu > 0).
+#' @param kappa Numeric vector of log-dispersion parameters (nu = exp(kappa)).
+#' @return Numeric vector of rate parameters lambda.
+#' @export
+lambda_u <- function(mu, kappa) {
+    .Call(`_MultDiscreteZM_lambda_u`, mu, kappa)
+}
+
+#' Exact moments of the COM-Poisson distribution
+#'
+#' @param lambda Numeric vector of rate parameters.
+#' @param nu Numeric vector of dispersion parameters.
+#' @return A matrix with columns logS, mean, var and K (truncation point).
+#' @export
+cmp_moments <- function(lambda, nu) {
+    .Call(`_MultDiscreteZM_cmp_moments`, lambda, nu)
 }
 
 likHoodcmpuzmI <- function(par, y1, y2, y3) {
@@ -39,6 +68,10 @@ likHoodcmpzmI <- function(par, y1, y2, y3) {
 
 logzmRegIu <- function(par, xmat, y1, y2, y3) {
     .Call(`_MultDiscreteZM_logzmRegIu`, par, xmat, y1, y2, y3)
+}
+
+logzmRegIu_vg <- function(par, xmat, y1, y2, y3) {
+    .Call(`_MultDiscreteZM_logzmRegIu_vg`, par, xmat, y1, y2, y3)
 }
 
 logzmRegTriIcmp <- function(par, xmat, y1, y2, y3) {

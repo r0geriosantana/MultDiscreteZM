@@ -13,7 +13,7 @@
 #' It includes vector recycling to align parameters and safeguards against numerical instability.
 #'
 #' @return A numeric vector of probabilities or log-probabilities.
-#' @author Rogerio A. Santana
+#' @author Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 #'
 #' @examples
 #' # Probabilidade pontual

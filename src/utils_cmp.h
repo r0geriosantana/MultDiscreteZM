@@ -6,38 +6,27 @@
 #include <RcppArmadillo.h>
 
 #include <cmath>
+#include "cmp_core.h"   // truncamento adaptativo e inversao exata da media
 
 using namespace Rcpp;
 
 // ===================================================================
-// FUNÇÕES AUXILIARES COMPARTILHADAS (Mestre)
+// FUNCOES AUXILIARES COMPARTILHADAS
 // ===================================================================
 
+// log S(lambda, nu) com truncamento adaptativo (Shmueli et al., 2005, Ap. B.1).
+// O argumento max_iter foi mantido apenas por compatibilidade e e ignorado.
 inline double compute_log_S_scalar(double lambda, double nu, int max_iter = 100) {
   if (std::isnan(lambda)) return R_NaN;
   if (lambda == 0.0) return 0.0;
-
-  NumericVector log_terms(max_iter + 1);
-  log_terms[0] = 0.0;
-  double log_lambda = std::log(lambda);
-  for (int j = 1; j <= max_iter; ++j) {
-    log_terms[j] = j * log_lambda - nu * std::lgamma(j + 1.0);
-  }
-  double max_log = Rcpp::max(log_terms);
-  return max_log + std::log(Rcpp::sum(Rcpp::exp(log_terms - max_log)));
+  return cmp_series(lambda, nu).logS;
 }
 
+// pmf na parametrizacao pela media EXATA: lambda = g^{-1}(mu; nu)
 inline double dcmpu(double y, double mu, double kappa, int max_iter = 100) {
-  double nu = std::exp(kappa);
-  double base = mu + (nu - 1.0) / (2.0 * nu);
-  if (base < 0.0) base = 0.0;
-  double lambda = std::pow(base, nu);
-
-  double log_S = compute_log_S_scalar(lambda, nu, max_iter);
-  double log_prob = y * std::log(lambda) - nu * std::lgamma(y + 1.0) - log_S;
-
-  if (!std::isfinite(log_prob)) return 0.0;
-  return std::exp(log_prob);
+  double lp = cmp_logpmf_u(y, mu, kappa);
+  if (!std::isfinite(lp)) return 0.0;
+  return std::exp(lp);
 }
 
 #endif // UTILS_CMP_H

@@ -20,11 +20,11 @@ A numeric vector of probabilities or log-probabilities.
 }
 \description{
 Calculate the probability mass function (PMF) of the univariate COM-Poisson distribution
-parameterized by the mean, as proposed by Ribeiro Jr et al. (2020).
+parameterized by its exact mean (Huang, 2017).
 }
 \details{
 The function computes the density using the normalization constant \code{\link{Zconst}}.
-It includes safeguards against numerical instability in the lambda approximation.
+The rate parameter is obtained numerically as lambda = g^{-1}(mu; nu) (see \code{\link{lambda_u}}).
 }
 \examples{
 # Probabilidade pontual
@@ -35,5 +35,5 @@ dcmp_u(y = 2, mu = 2, kappa = -0.36, log = TRUE)
 
 }
 \author{
-Rogerio A. Santana
+Rogerio A. Santana,Katiane S. Conceicao, Carlos A. R. Diniz, Marinho G. Andrade
 }
